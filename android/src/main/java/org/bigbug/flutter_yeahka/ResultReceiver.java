@@ -33,6 +33,8 @@ public class ResultReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         SytApi sytApi = SytFactory.createSytIml(context);
+        System.out.println(FlutterYeahkaPlugin.eventSink);
+        System.out.println("111111111111");
         sytApi.handleAction(intent, new ISytEventHandler() {
             @Override
             public void onResponse(BaseResp baseResp) {
@@ -48,6 +50,7 @@ public class ResultReceiver extends BroadcastReceiver {
                     if (isSuccess) {
                         msg = "激活成功";
                     }
+                    FlutterYeahkaPlugin.eventSink.success("2222233333444");
                 } else if (baseResp instanceof SwipeCardTrans.Resp) {
                     if (isSuccess) {
                         msg = "刷卡交易成功";

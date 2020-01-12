@@ -1,13 +1,22 @@
 package org.bigbug.flutter_yeahka;
 
-import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 
+import com.yeahka.shouyintong.sdk.ISytEventHandler;
+import com.yeahka.shouyintong.sdk.action.*;
+import com.yeahka.shouyintong.sdk.action.base.BaseResp;
+import com.yeahka.shouyintong.sdk.api.SytApi;
+import com.yeahka.shouyintong.sdk.api.SytFactory;
+import com.yeahka.shouyintong.sdk.info.TradeInfo;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.*;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
@@ -24,13 +33,19 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
     private String DOWNLOAD_TMK = "downloadTMK"; // 下载TMK
     private String action = "org.bigbug.flutter_yeahka.com.yeahka.L3.RESULT";
 
+    public static EventChannel.EventSink eventSink;
+
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         final MethodChannel channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_yeahka");
-        channel.setMethodCallHandler(new FlutterYeahkaPlugin());
+        FlutterYeahkaPlugin flutterYeahkaPlugin = new FlutterYeahkaPlugin();
+
+        channel.setMethodCallHandler(flutterYeahkaPlugin);
         flutterYeahkaModule = new FlutterYeahkaModule();
         flutterYeahkaModule.initBase(flutterPluginBinding.getApplicationContext());
+        final EventChannel eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_yeahka_event");
+        eventChannel.setStreamHandler(flutterYeahkaPlugin);
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -51,10 +66,7 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         System.out.println(call.method);
         if (call.method.equals(SIGN)) {
-            boolean sign = flutterYeahkaModule.sign();
-            if (!sign) {
-                result.error("提示", "签到失败", null);
-            }
+            flutterYeahkaModule.sign();
         } else if (call.method.equals(DOWNLOAD_TMK)) {
             if (call.hasArgument("authorizationCode")) {
                 boolean downloadTMK = flutterYeahkaModule.downloadTMK((String) call.argument("authorizationCode"));
@@ -79,12 +91,13 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
-        System.out.println("Listener /........");
+        System.out.println("Listener start");
+        eventSink = events;
     }
 
     @Override
     public void onCancel(Object arguments) {
-
+        eventSink = null;
     }
 
     @Override
