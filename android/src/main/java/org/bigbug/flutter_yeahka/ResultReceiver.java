@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.yeahka.shouyintong.sdk.ISytEventHandler;
 import com.yeahka.shouyintong.sdk.action.PosActivate;
 import com.yeahka.shouyintong.sdk.action.PosSign;
@@ -24,120 +25,158 @@ import com.yeahka.shouyintong.sdk.api.SytApi;
 import com.yeahka.shouyintong.sdk.api.SytFactory;
 import com.yeahka.shouyintong.sdk.info.TradeInfo;
 
-import java.io.Serializable;
+import java.util.List;
+
+import io.flutter.plugin.common.EventChannel;
+
+import static org.bigbug.flutter_yeahka.constant.ActionType.DOWNLOAD_TMK;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_B_SCAN_C;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_WX;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_YL;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_ZFB;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_REFUND;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SIGN;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REFUND;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REVOKE;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_TRANS;
+import static org.bigbug.flutter_yeahka.constant.ActionType.TRANS_QUERY_DETAIL;
+import static org.bigbug.flutter_yeahka.constant.ActionType.TRANS_QUERY_LIST;
 
 public class ResultReceiver extends BroadcastReceiver {
-
-//    private static final String EXTRA_TRADE_INFO_LIST = "extra_trade_info_list";
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         SytApi sytApi = SytFactory.createSytIml(context);
-        System.out.println(FlutterYeahkaPlugin.eventSink);
-        System.out.println("111111111111");
         sytApi.handleAction(intent, new ISytEventHandler() {
             @Override
             public void onResponse(BaseResp baseResp) {
                 boolean isSuccess = baseResp.isSuccessful();
                 String msg = "";
-                String errorCode = "";
+                String errorCode;
+                EventChannel.EventSink eventSink = FlutterYeahkaPlugin.eventSink;
+                if (eventSink == null) {
+                    return;
+                }
+
                 if (!isSuccess) {
                     msg = baseResp.getMsg();
                     errorCode = baseResp.getCode() + "";
-                }
-
-                if (baseResp instanceof PosActivate.Resp) {
-                    if (isSuccess) {
-                        msg = "激活成功";
-                    }
-                    FlutterYeahkaPlugin.eventSink.success("2222233333444");
-                } else if (baseResp instanceof SwipeCardTrans.Resp) {
-                    if (isSuccess) {
-                        msg = "刷卡交易成功";
-                        TradeInfo tradeInfo=((SwipeCardTrans.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-                    }
-                } else if (baseResp instanceof QrPayBScanC.Resp) {
-                    if (isSuccess) {
-                        msg = "主扫交易成功";
-                        TradeInfo tradeInfo=((QrPayBScanC.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-                    }
-                } else if (baseResp instanceof QrPayCScanBWx.Resp) {
-                    if (isSuccess) {
-                        msg = "微信支付交易成功";
-                        TradeInfo tradeInfo=((QrPayCScanBWx.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-                    }
-                } else if (baseResp instanceof QrPayCScanBYl.Resp) {
-                    if (isSuccess) {
-                        msg = "银联二维码支付交易成功";
-                        TradeInfo tradeInfo=((QrPayCScanBYl.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-                    }
-                } else if (baseResp instanceof QrPayCScanBZfb.Resp) {
-                    if (isSuccess) {
-                        msg = "支付宝支付交易成功";
-                        TradeInfo tradeInfo=((QrPayCScanBZfb.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-                    }
-                } else if (baseResp instanceof QrPayRefund.Resp) {
-                    if (isSuccess) {
-                        msg = "扫码退款成功";
-                    }
-                } else if (baseResp instanceof PosSign.Resp) {
-                    if (isSuccess) {
-                        msg = "签到成功";
-                    }
-                    //商户名称
-                    String merchantName=((PosSign.Resp) baseResp).merchantName;
-                    //商户id
-                    String merchantId=((PosSign.Resp) baseResp).merchantId;
-                    //批次号
-                    String batchNo=((PosSign.Resp) baseResp).batchNo;
-                    //终端号
-                    String terminalId=((PosSign.Resp) baseResp).terminalId;
-                    //TODO 自行保存
-//                }if (baseResp instanceof TransQueryDetail.Resp) {
-//                    if(isSuccess) {
-//                        TradeInfo tradeInfo = ((TransQueryDetail.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-//                    }
-//                }  if (baseResp instanceof SwipeCardRefund.Resp) {
-//                    if(isSuccess) {
-//                        TradeInfo tradeInfo = ((SwipeCardRefund.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-//                    }
-//                } else if (baseResp instanceof SwipeCardRevoke.Resp) {
-//                    if(isSuccess) {
-//                        TradeInfo tradeInfo = ((SwipeCardRevoke.Resp) baseResp).tradeInfo;
-//                        startDetailActivity(tradeInfo,context);
-//                    }
-//                }else if (baseResp instanceof TransQueryList.Resp) {
-//                    Intent listIntent=new Intent(context,TradeInfoActivity.class);
-//                    listIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    // mAdapter.setNewData(((TransQueryList.Resp) baseResp).tradeInfoList);
-//                    listIntent.putExtra(EXTRA_TRADE_INFO_LIST, (Serializable) ((TransQueryList.Resp) baseResp).tradeInfoList);
-//                    context.startActivity(listIntent);
-                }
-
-                if (isSuccess) {
-                    if(!TextUtils.isEmpty(msg)) {
-                        Toast.makeText(context, msg + "(main)", Toast.LENGTH_LONG).show();
-                    }
-                } else {
                     Toast.makeText(context, msg + "(" + errorCode + ")", Toast.LENGTH_LONG).show();
+                    eventSink.error(errorCode, msg, null);
+                    return;
+                }
+                if (baseResp instanceof PosActivate.Resp) {
+                    msg = "激活成功";
+                    eventSink.success(JSON.toJSONString(new RespModel(DOWNLOAD_TMK)));
+
+                } else if (baseResp instanceof SwipeCardTrans.Resp) {
+                    msg = "刷卡交易成功";
+                    TradeInfo tradeInfo = ((SwipeCardTrans.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(SWIPE_CARD_TRANS, tradeInfo)));
+                } else if (baseResp instanceof QrPayBScanC.Resp) {
+                    msg = "主扫交易成功";
+                    TradeInfo tradeInfo = ((QrPayBScanC.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(QRPAY_B_SCAN_C, tradeInfo)));
+                } else if (baseResp instanceof QrPayCScanBWx.Resp) {
+                    msg = "微信支付交易成功";
+                    TradeInfo tradeInfo = ((QrPayCScanBWx.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(QRPAY_C_SCAN_B_WX, tradeInfo)));
+                } else if (baseResp instanceof QrPayCScanBYl.Resp) {
+                    msg = "银联二维码支付交易成功";
+                    TradeInfo tradeInfo = ((QrPayCScanBYl.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(QRPAY_C_SCAN_B_YL, tradeInfo)));
+                } else if (baseResp instanceof QrPayCScanBZfb.Resp) {
+                    msg = "支付宝支付交易成功";
+                    TradeInfo tradeInfo = ((QrPayCScanBZfb.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(QRPAY_C_SCAN_B_ZFB, tradeInfo)));
+                } else if (baseResp instanceof QrPayRefund.Resp) {
+                    msg = "扫码退款成功";
+                    eventSink.success(JSON.toJSONString(new RespModel(QRPAY_REFUND)));
+                } else if (baseResp instanceof PosSign.Resp) {
+                    msg = "签到成功";
+                    eventSink.success(JSON.toJSONString(new RespModel(SIGN)));
+                } else if (baseResp instanceof TransQueryDetail.Resp) {
+                    TradeInfo tradeInfo = ((TransQueryDetail.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(TRANS_QUERY_DETAIL, tradeInfo)));
+                } else if (baseResp instanceof SwipeCardRefund.Resp) {
+                    TradeInfo tradeInfo = ((SwipeCardRefund.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(SWIPE_CARD_REFUND, tradeInfo)));
+                } else if (baseResp instanceof SwipeCardRevoke.Resp) {
+                    TradeInfo tradeInfo = ((SwipeCardRevoke.Resp) baseResp).tradeInfo;
+                    eventSink.success(JSON.toJSONString(new RespModel(SWIPE_CARD_REVOKE, tradeInfo)));
+                } else if (baseResp instanceof TransQueryList.Resp) {
+                    List<TradeInfo> tradeInfos = ((TransQueryList.Resp) baseResp).tradeInfoList;
+                    eventSink.success(JSON.toJSONString(new RespModel(TRANS_QUERY_LIST, tradeInfos)));
+                }
+
+                if (!TextUtils.isEmpty(msg)) {
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                 }
             }
-
         });
     }
+}
 
-//    private void startDetailActivity(TradeInfo tradeInfo,Context context){
-//        Intent intent = new Intent(context, TradeDetailActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        String EXTRA_TRADE_INFO = "extra_trade_info";
-//        intent.putExtra(EXTRA_TRADE_INFO, tradeInfo);
-//        context.startActivity(intent);
-//    }
+// 响应模型
+class RespModel {
+    /**
+     * key值
+     */
+    private String key;
+    /**
+     * 数据对象
+     */
+    private TradeInfo data;
+
+    private List<TradeInfo> list;
+
+    public RespModel() {
+    }
+
+    public RespModel(String key) {
+        this.key = key;
+    }
+
+    public RespModel(String key, List<TradeInfo> list) {
+        this.key = key;
+        this.list = list;
+    }
+
+    public RespModel(String key, TradeInfo data) {
+        this.key = key;
+        this.data = data;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public TradeInfo getData() {
+        return data;
+    }
+
+    public void setData(TradeInfo data) {
+        this.data = data;
+    }
+
+    public List<TradeInfo> getList() {
+        return list;
+    }
+
+    public void setList(List<TradeInfo> list) {
+        this.list = list;
+    }
+
+    @Override
+    public String toString() {
+        return "RespModel{" +
+                "key='" + key + '\'' +
+                ", data=" + data +
+                ", list=" + list +
+                '}';
+    }
 }

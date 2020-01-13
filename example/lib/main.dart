@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_yeahka/flutter_yeahka.dart';
+import 'package:flutter_yeahka/entitys/resp_data.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,7 +21,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
-    FlutterYeahka.listener;
+    _initListener();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -26,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterYeahka.platformVersion;
+      platformVersion = "Unknow";
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -42,7 +45,34 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _sign(){
-    FlutterYeahka.downloadTMK;
+     FlutterYeahka.sign();
+  }
+
+  void _swipeCardTrans(){
+    FlutterYeahka.swipeCardTrans(1, customOrderId: "123123");
+  }
+
+  void _unipayRevoke(){
+    FlutterYeahka.swipeCardRevoke("165003013957");
+  }
+
+  void _unipayDetail(){
+    FlutterYeahka.transQueryDetail("165003013957");
+  }
+
+  void _unipayList(){
+    FlutterYeahka.transQueryList("000003917016585");
+  }
+
+  void _initListener(){
+    FlutterYeahka.eventChannel.receiveBroadcastStream().listen( (data){
+      RespData respData = RespData.fromJson(jsonDecode(data));
+      print(respData);
+
+    },onError: (err){
+      if(err is PlatformException){
+      }
+    });
   }
 
   @override
@@ -59,43 +89,43 @@ class _MyAppState extends State<MyApp> {
               Text(
                   'Running on: $_platformVersion\n'
               ),
-              const RaisedButton(
-                onPressed: null,
-                child: Text(
-                    'Disabled Button',
-                    style: TextStyle(fontSize: 20)
-                ),
-              ),
               const SizedBox(height: 30),
               RaisedButton(
                 onPressed: _sign,
                 child: const Text(
-                    'Enabled Button',
+                    '签到',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _swipeCardTrans,
+                child: const Text(
+                    '刷卡支付',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _unipayRevoke,
+                child: const Text(
+                    '刷卡撤销',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _unipayDetail,
+                child: const Text(
+                    '查询详情',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _unipayList,
+                child: const Text(
+                    '查询列表',
                     style: TextStyle(fontSize: 20)
                 ),
               ),
               const SizedBox(height: 30),
-              RaisedButton(
-                onPressed: () {},
-                textColor: Colors.white,
-                padding: const EdgeInsets.all(0.0),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color(0xFF0D47A1),
-                        Color(0xFF1976D2),
-                        Color(0xFF42A5F5),
-                      ],
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(10.0),
-                  child: const Text(
-                      'Gradient Button',
-                      style: TextStyle(fontSize: 20)
-                  ),
-                ),
-              ),
             ],
           ),
         ),

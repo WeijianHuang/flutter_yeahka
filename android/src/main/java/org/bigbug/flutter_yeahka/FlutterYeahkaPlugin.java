@@ -1,40 +1,45 @@
 package org.bigbug.flutter_yeahka;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 
-import com.yeahka.shouyintong.sdk.ISytEventHandler;
-import com.yeahka.shouyintong.sdk.action.*;
-import com.yeahka.shouyintong.sdk.action.base.BaseResp;
-import com.yeahka.shouyintong.sdk.api.SytApi;
-import com.yeahka.shouyintong.sdk.api.SytFactory;
-import com.yeahka.shouyintong.sdk.info.TradeInfo;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.plugin.common.*;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import static org.bigbug.flutter_yeahka.constant.ActionType.DOWNLOAD_TMK;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_B_SCAN_C;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_WX;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_YL;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_ZFB;
+import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_REFUND;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SIGN;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REFUND;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REVOKE;
+import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_TRANS;
+import static org.bigbug.flutter_yeahka.constant.ActionType.TRANS_QUERY_DETAIL;
+import static org.bigbug.flutter_yeahka.constant.ActionType.TRANS_QUERY_LIST;
 
 /**
  * FlutterYeahkaPlugin
  */
 public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, StreamHandler {
 
+    private String NOT_FOUND_ERROR_CODE = "404";
+    private String BAD_PARAMS_ERROR_CODE = "400";
+    private String CUSTOM_ORDER_ID = "customOrderId";
+    private String ORI_ORDER_ID = "oriOrderId";
+    private String AMOUNT = "amount";
+    private String REFERENCE_NO = "referenceNo";
+    private String MERCHANT_ID = "merchantId";
+    private String AUTHORIZATION_CODE = "authorizationCode";
+
     private static FlutterYeahkaModule flutterYeahkaModule = null;
-
-    private String SIGN = "sign"; // 签到
-    private String UNIPAY = "unipay"; // 银联支付
-    private String DOWNLOAD_TMK = "downloadTMK"; // 下载TMK
-    private String action = "org.bigbug.flutter_yeahka.com.yeahka.L3.RESULT";
-
-    public static EventChannel.EventSink eventSink;
-
+    static EventChannel.EventSink eventSink;
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -64,28 +69,97 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        System.out.println(call.method);
-        if (call.method.equals(SIGN)) {
-            flutterYeahkaModule.sign();
-        } else if (call.method.equals(DOWNLOAD_TMK)) {
-            if (call.hasArgument("authorizationCode")) {
-                boolean downloadTMK = flutterYeahkaModule.downloadTMK((String) call.argument("authorizationCode"));
-                if (!downloadTMK) {
-                    result.error("提示", "授权码错误", null);
+        if (!flutterYeahkaModule.checkInstall()) {
+            result.error(NOT_FOUND_ERROR_CODE, "收银通未安装", null);
+            return;
+        }
+
+        String customOrderId = call.argument(CUSTOM_ORDER_ID);
+        String oriOrderId = call.argument(ORI_ORDER_ID);
+        switch (call.method) {
+            case SIGN:
+                flutterYeahkaModule.sign();
+                break;
+            case DOWNLOAD_TMK:
+                String authorizationCode = getAuthorizationCode(call, result);
+                if (authorizationCode != null) {
+                    result.success(flutterYeahkaModule.downloadTMK(authorizationCode));
                 }
-            } else {
-                result.error("提示", "authorizationCode 不能为空", null);
+                break;
+            case SWIPE_CARD_TRANS: {
+                Integer amount = getAmount(call, result);
+                if (amount != null) {
+                    result.success(flutterYeahkaModule.swipeCardTrans(amount, customOrderId));
+                }
+                break;
             }
-        } else if (call.method.equals(UNIPAY)) {
-            String customerOrderId = call.argument("customerOrderId");
-            String amount = call.argument("amount");
-            if (amount != null && !amount.equals("")) {
-                flutterYeahkaModule.unipay(customerOrderId, Integer.parseInt(amount));
-            } else {
-                result.error("提示", "amount 不能为空", null);
+            case QRPAY_B_SCAN_C: {
+                Integer amount = getAmount(call, result);
+                if (amount != null) {
+                    result.success(flutterYeahkaModule.qrPayBScanC(amount, customOrderId));
+                }
+                break;
             }
-        } else {
-            result.notImplemented();
+            case QRPAY_C_SCAN_B_WX: {
+                Integer amount = getAmount(call, result);
+                if (amount != null) {
+                    result.success(flutterYeahkaModule.qrPayCScanBWx(amount, customOrderId));
+                }
+                break;
+            }
+            case QRPAY_C_SCAN_B_YL: {
+                Integer amount = getAmount(call, result);
+                if (amount != null) {
+                    result.success(flutterYeahkaModule.qrPayCScanBYl(amount, customOrderId));
+                }
+                break;
+            }
+            case QRPAY_C_SCAN_B_ZFB: {
+                Integer amount = getAmount(call, result);
+                if (amount != null) {
+                    result.success(flutterYeahkaModule.qrPayCScanBZfb(amount, customOrderId));
+                }
+                break;
+            }
+            case QRPAY_REFUND: {
+                String referenceNo = getReferenceNo(call, result);
+                Integer amount = getAmount(call, result);
+                if (amount != null && referenceNo != null) {
+                    result.success(flutterYeahkaModule.qrPayRefund(amount, oriOrderId, referenceNo));
+                }
+                break;
+            }
+            case TRANS_QUERY_DETAIL: {
+                String referenceNo = getReferenceNo(call, result);
+                if (referenceNo != null) {
+                    result.success(flutterYeahkaModule.transQueryDetail(oriOrderId, referenceNo));
+                }
+                break;
+            }
+            case SWIPE_CARD_REFUND: {
+                String referenceNo = getReferenceNo(call, result);
+                Integer amount = getAmount(call, result);
+                if (amount != null && referenceNo != null) {
+                    result.success(flutterYeahkaModule.swipeCardRefund(amount, oriOrderId, referenceNo));
+                }
+                break;
+            }
+            case SWIPE_CARD_REVOKE: {
+                String referenceNo = getReferenceNo(call, result);
+                if (referenceNo != null) {
+                    result.success(flutterYeahkaModule.swipeCardRevoke(oriOrderId, referenceNo));
+                }
+                break;
+            }
+            case TRANS_QUERY_LIST:
+                String merchantId = getMerchantId(call, result);
+                if (merchantId != null) {
+                    result.success(flutterYeahkaModule.transQueryList(merchantId));
+                }
+                break;
+            default:
+                result.notImplemented();
+                break;
         }
     }
 
@@ -102,5 +176,41 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    }
+
+    private Integer getAmount(MethodCall call, Result result) {
+        Integer amount = call.argument(AMOUNT);
+        if (amount == null || amount <= 0) {
+            result.error(BAD_PARAMS_ERROR_CODE, "amount不能为空或者不能小于等于零", null);
+            return null;
+        }
+        return amount;
+    }
+
+    private String getReferenceNo(MethodCall call, Result result) {
+        String referenceNo = call.argument(REFERENCE_NO);
+        if (referenceNo == null || referenceNo.equals("")) {
+            result.error(BAD_PARAMS_ERROR_CODE, "referenceNo参考号不能为空", null);
+            return null;
+        }
+        return referenceNo;
+    }
+
+    private String getMerchantId(MethodCall call, Result result) {
+        String merchantId = call.argument(MERCHANT_ID);
+        if (merchantId == null || merchantId.equals("")) {
+            result.error(BAD_PARAMS_ERROR_CODE, "merchantId不能为空", null);
+            return null;
+        }
+        return merchantId;
+    }
+
+    private String getAuthorizationCode(MethodCall call, Result result) {
+        String authorizationCode = call.argument(AUTHORIZATION_CODE);
+        if (authorizationCode == null || authorizationCode.equals("")) {
+            result.error(BAD_PARAMS_ERROR_CODE, "authorizationCode不能为空", null);
+            return null;
+        }
+        return authorizationCode;
     }
 }

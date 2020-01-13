@@ -1,0 +1,12 @@
+final String SIGN = "sign"; // 签到
+final String DOWNLOAD_TMK = "downloadTMK"; // 下载TMK
+final String SWIPE_CARD_TRANS = "swipeCardTrans"; // 刷卡支付
+final String QRPAY_B_SCAN_C = "qrPayBScanC"; // 二维码支付B扫C
+final String QRPAY_C_SCAN_B_WX = "qrPayCScanBWx"; //微信二维码支付C扫B
+final String QRPAY_C_SCAN_B_YL = "qrPayCScanBYl"; //银联二维码支付C扫B
+final String QRPAY_C_SCAN_B_ZFB = "qrPayCScanBZfb"; //支付宝二维码支付C扫B
+final String QRPAY_REFUND = "qrPayRefund"; // 二维码扫码退款
+final String TRANS_QUERY_DETAIL = "transQueryDetail"; // 订单详情获取
+final String SWIPE_CARD_REFUND = "swipeCardRefund"; // 刷卡退款
+final String SWIPE_CARD_REVOKE = "swipeCardRevoke"; // 刷卡撤销
+final String TRANS_QUERY_LIST = "transQueryList"; // 订单列表获取
