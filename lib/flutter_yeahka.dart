@@ -17,23 +17,23 @@ class FlutterYeahka {
     await _channel.invokeMethod(DOWNLOAD_TMK, {"authorizationCode": authorizationCode});
   }
 
-  static Future<String> swipeCardTrans(int amount, {String customOrderId}) async {
+  static Future<String> swipeCardTrans(int amount, String customOrderId) async {
     await _channel.invokeMethod(SWIPE_CARD_TRANS, {"amount": amount, "customOrderId": customOrderId});
   }
 
-  static Future<String> qrPayBScanC(int amount, {String customOrderId}) async {
+  static Future<String> qrPayBScanC(int amount, String customOrderId) async {
     await _channel.invokeMethod(QRPAY_B_SCAN_C, {"amount": amount, "customOrderId": customOrderId});
   }
 
-  static Future<String> qrPayCScanBWx(int amount, {String customOrderId}) async {
+  static Future<String> qrPayCScanBWx(int amount, String customOrderId) async {
     await _channel.invokeMethod(QRPAY_C_SCAN_B_WX, {"amount": amount, "customOrderId": customOrderId});
   }
 
-  static Future<String> qrPayCScanBYl(int amount, {String customOrderId}) async {
+  static Future<String> qrPayCScanBYl(int amount, String customOrderId) async {
     await _channel.invokeMethod(QRPAY_C_SCAN_B_YL, {"amount": amount, "customOrderId": customOrderId});
   }
 
-  static Future<String> qrPayCScanBZfb(int amount, {String customOrderId}) async {
+  static Future<String> qrPayCScanBZfb(int amount, String customOrderId) async {
     await _channel.invokeMethod(QRPAY_C_SCAN_B_ZFB, {"amount": amount, "customerOrderId": customOrderId});
   }
 

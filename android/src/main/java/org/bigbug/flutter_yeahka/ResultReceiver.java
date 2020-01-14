@@ -50,8 +50,6 @@ public class ResultReceiver extends BroadcastReceiver {
         sytApi.handleAction(intent, new ISytEventHandler() {
             @Override
             public void onResponse(BaseResp baseResp) {
-                System.out.println(baseResp);
-                System.out.println("121312");
                 boolean isSuccess = baseResp.isSuccessful();
                 String msg = "";
                 String errorCode;
@@ -66,13 +64,11 @@ public class ResultReceiver extends BroadcastReceiver {
                     errorCode = baseResp.getCode() + "";
                     Toast.makeText(context, msg + "(" + errorCode + ")", Toast.LENGTH_LONG).show();
                     eventSink.error(errorCode, msg, null);
-                    System.out.println("123123123");
                     return;
                 }
                 if (baseResp instanceof PosActivate.Resp) {
                     msg = "激活成功";
                     eventSink.success(JSON.toJSONString(new RespModel(DOWNLOAD_TMK)));
-                    System.out.println("1231344444");
                 } else if (baseResp instanceof SwipeCardTrans.Resp) {
                     msg = "刷卡交易成功";
                     TradeInfo tradeInfo = ((SwipeCardTrans.Resp) baseResp).tradeInfo;
