@@ -1,4 +1,4 @@
-import 'package:flutter_yeahka/entitys/trans_info.dart';
+import 'package:flutter_yeahka/entities/trans_info.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'resp_data.g.dart';
