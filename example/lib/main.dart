@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_yeahka/flutter_yeahka.dart';
-import 'package:flutter_yeahka/entitys/resp_data.dart';
+import 'package:flutter_yeahka/entities/resp_data.dart';
 
 void main() => runApp(MyApp());
 
@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _swipeCardTrans(){
-    FlutterYeahka.swipeCardTrans(1, customOrderId: "123123");
+    FlutterYeahka.swipeCardTrans(1, "123123");
   }
 
   void _unipayRevoke(){
