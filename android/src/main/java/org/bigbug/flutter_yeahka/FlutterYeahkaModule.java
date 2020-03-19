@@ -20,6 +20,7 @@ import com.yeahka.shouyintong.sdk.api.SytApi;
 import com.yeahka.shouyintong.sdk.api.SytFactory;
 
 import static android.widget.Toast.LENGTH_LONG;
+import static com.yeahka.shouyintong.sdk.Constant.TRANSACTION_TYPE_CONSUME;
 
 public class FlutterYeahkaModule {
 
@@ -116,8 +117,9 @@ public class FlutterYeahkaModule {
 
     boolean reprintTicket(String orderId, String referenceNo) {
         ReprintTicket.Req reprintTicket = new ReprintTicket.Req();
-        reprintTicket.referenceNo = referenceNo;
+//        reprintTicket.referenceNo = referenceNo;
         reprintTicket.orderId = orderId;
+        reprintTicket.transType = TRANSACTION_TYPE_CONSUME;
         return sytApi.sendReq(reprintTicket);
     }
 

@@ -64,6 +64,10 @@ class _MyAppState extends State<MyApp> {
     FlutterYeahka.transQueryList("000003917016585");
   }
 
+  void _reprintTicket(){
+    FlutterYeahka.reprintTicket("557650705381326848");
+  }
+
   void _initListener(){
     FlutterYeahka.eventChannel.receiveBroadcastStream().listen( (data){
       RespData respData = RespData.fromJson(jsonDecode(data));
@@ -122,6 +126,13 @@ class _MyAppState extends State<MyApp> {
                 onPressed: _unipayList,
                 child: const Text(
                     '查询列表',
+                    style: TextStyle(fontSize: 20)
+                ),
+              ),
+              RaisedButton(
+                onPressed: _reprintTicket,
+                child: const Text(
+                    '重新打印',
                     style: TextStyle(fontSize: 20)
                 ),
               ),

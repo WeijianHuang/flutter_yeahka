@@ -161,10 +161,8 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
                 break;
             case REPRINT_TICKET:
                 String referenceNo = call.argument(REFERENCE_NO);
-                String orderId = getOrderId(call,result);
-                if (orderId != null) {
-                    result.success(flutterYeahkaModule.reprintTicket(orderId,referenceNo));
-                }
+                String orderId = getOrderId(call, result);
+                result.success(flutterYeahkaModule.reprintTicket(orderId, referenceNo));
                 break;
             default:
                 result.notImplemented();
