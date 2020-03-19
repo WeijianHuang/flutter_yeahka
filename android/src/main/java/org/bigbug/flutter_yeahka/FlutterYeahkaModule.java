@@ -10,6 +10,7 @@ import com.yeahka.shouyintong.sdk.action.QrPayCScanBWx;
 import com.yeahka.shouyintong.sdk.action.QrPayCScanBYl;
 import com.yeahka.shouyintong.sdk.action.QrPayCScanBZfb;
 import com.yeahka.shouyintong.sdk.action.QrPayRefund;
+import com.yeahka.shouyintong.sdk.action.ReprintTicket;
 import com.yeahka.shouyintong.sdk.action.SwipeCardRefund;
 import com.yeahka.shouyintong.sdk.action.SwipeCardRevoke;
 import com.yeahka.shouyintong.sdk.action.SwipeCardTrans;
@@ -111,6 +112,13 @@ public class FlutterYeahkaModule {
         TransQueryList.Req transQueryListReq = new TransQueryList.Req();
         transQueryListReq.merchantId = merchantId;
         return sytApi.sendReq(transQueryListReq);
+    }
+
+    boolean reprintTicket(String orderId, String referenceNo) {
+        ReprintTicket.Req reprintTicket = new ReprintTicket.Req();
+        reprintTicket.referenceNo = referenceNo;
+        reprintTicket.orderId = orderId;
+        return sytApi.sendReq(reprintTicket);
     }
 
     boolean checkInstall(){

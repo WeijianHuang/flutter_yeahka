@@ -17,6 +17,7 @@ import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_WX;
 import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_YL;
 import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_ZFB;
 import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_REFUND;
+import static org.bigbug.flutter_yeahka.constant.ActionType.REPRINT_TICKET;
 import static org.bigbug.flutter_yeahka.constant.ActionType.SIGN;
 import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REFUND;
 import static org.bigbug.flutter_yeahka.constant.ActionType.SWIPE_CARD_REVOKE;
@@ -35,6 +36,7 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
     private String ORI_ORDER_ID = "oriOrderId";
     private String AMOUNT = "amount";
     private String REFERENCE_NO = "referenceNo";
+    private String ORDER_ID = "orderId";
     private String MERCHANT_ID = "merchantId";
     private String AUTHORIZATION_CODE = "authorizationCode";
 
@@ -157,6 +159,13 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
                     result.success(flutterYeahkaModule.transQueryList(merchantId));
                 }
                 break;
+            case REPRINT_TICKET:
+                String referenceNo = call.argument(REFERENCE_NO);
+                String orderId = getOrderId(call,result);
+                if (orderId != null) {
+                    result.success(flutterYeahkaModule.reprintTicket(orderId,referenceNo));
+                }
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -194,6 +203,15 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
             return null;
         }
         return referenceNo;
+    }
+
+    private String getOrderId(MethodCall call, Result result) {
+        String orderId = call.argument(ORDER_ID);
+        if (orderId == null || orderId.equals("")) {
+            result.error(BAD_PARAMS_ERROR_CODE, "orderId不能为空", null);
+            return null;
+        }
+        return orderId;
     }
 
     private String getMerchantId(MethodCall call, Result result) {

@@ -10,3 +10,4 @@ final String TRANS_QUERY_DETAIL = "transQueryDetail"; // 订单详情获取
 final String SWIPE_CARD_REFUND = "swipeCardRefund"; // 刷卡退款
 final String SWIPE_CARD_REVOKE = "swipeCardRevoke"; // 刷卡撤销
 final String TRANS_QUERY_LIST = "transQueryList"; // 订单列表获取
+final String REPRINT_TICKET = "reprintTicket"; // 重打印

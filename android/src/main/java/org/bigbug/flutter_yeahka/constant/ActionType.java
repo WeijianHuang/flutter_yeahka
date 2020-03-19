@@ -13,4 +13,5 @@ public class ActionType {
     public static final String SWIPE_CARD_REFUND = "swipeCardRefund"; // 刷卡退款
     public static final String SWIPE_CARD_REVOKE = "swipeCardRevoke"; // 刷卡撤销
     public static final String TRANS_QUERY_LIST = "transQueryList"; // 订单列表获取
+    public static final String REPRINT_TICKET = "reprintTicket"; // 重打印
 }

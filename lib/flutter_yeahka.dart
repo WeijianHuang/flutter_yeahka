@@ -57,4 +57,8 @@ class FlutterYeahka {
   static Future<String> transQueryList(String merchantId) async {
     await _channel.invokeMethod(TRANS_QUERY_LIST, {"merchantId": merchantId});
   }
+
+  static Future<String> reprintTicket(String orderId,{String referenceNo}) async {
+    await _channel.invokeMethod(REPRINT_TICKET, {"orderId":orderId, "referenceNo": referenceNo});
+  }
 }
