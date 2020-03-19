@@ -37,6 +37,6 @@ android {
 }
 
 dependencies {
-    implementation(name: 'posPaySdk-V2.0', ext: 'aar')
+    implementation(name: 'posPaySdk-V2.3', ext: 'aar')
     implementation(name: 'fastjson-1.2.62', ext: 'jar')
 }
