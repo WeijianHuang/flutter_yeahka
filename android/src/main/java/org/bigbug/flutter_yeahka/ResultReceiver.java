@@ -93,7 +93,7 @@ public class ResultReceiver extends BroadcastReceiver {
                     msg = "扫码退款成功";
                     eventSink.success(JSON.toJSONString(new RespModel(QRPAY_REFUND)));
                 } else if (baseResp instanceof PosSign.Resp) {
-                    msg = "签到成功";
+//                    msg = "签到成功";
                     eventSink.success(JSON.toJSONString(new RespModel(SIGN)));
                 } else if (baseResp instanceof TransQueryDetail.Resp) {
                     TradeInfo tradeInfo = ((TransQueryDetail.Resp) baseResp).tradeInfo;
