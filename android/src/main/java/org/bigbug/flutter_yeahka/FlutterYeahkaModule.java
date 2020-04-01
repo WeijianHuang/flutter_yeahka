@@ -117,7 +117,7 @@ public class FlutterYeahkaModule {
 
     boolean reprintTicket(String orderId, String referenceNo) {
         ReprintTicket.Req reprintTicket = new ReprintTicket.Req();
-//        reprintTicket.referenceNo = referenceNo;
+        reprintTicket.referenceNo = referenceNo;
         reprintTicket.orderId = orderId;
         reprintTicket.transType = TRANSACTION_TYPE_CONSUME;
         return sytApi.sendReq(reprintTicket);
@@ -127,16 +127,10 @@ public class FlutterYeahkaModule {
     boolean checkInstall(){
         boolean installed = sytApi.isSytInstalled();
 
-        if (!installed && checkPOS()) {
+        if (!installed) {
             Toast.makeText(context, "请先安装收银通", LENGTH_LONG).show();
         }
         return  installed;
-    }
-
-    // 检查是否为POS
-    private boolean checkPOS(){
-        String model = android.os.Build.MODEL;
-        return model.equals("P1_4G");
     }
 
 }
