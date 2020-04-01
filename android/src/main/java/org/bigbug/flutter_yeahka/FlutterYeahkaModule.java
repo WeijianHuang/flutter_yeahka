@@ -123,11 +123,24 @@ public class FlutterYeahkaModule {
         return sytApi.sendReq(reprintTicket);
     }
 
+    // 检查是否安装收银通
     boolean checkInstall(){
         boolean installed = sytApi.isSytInstalled();
-        if (!installed) {
+
+        System.out.println(android.os.Build.MODEL);
+        System.out.println(checkPOS());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        if (!installed && checkPOS()) {
             Toast.makeText(context, "请先安装收银通", LENGTH_LONG).show();
         }
         return  installed;
     }
+
+    // 检查是否为POS
+    private boolean checkPOS(){
+        String model = android.os.Build.MODEL;
+        return model.equals("P1_4G");
+    }
+
 }
