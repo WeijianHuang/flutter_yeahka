@@ -127,10 +127,6 @@ public class FlutterYeahkaModule {
     boolean checkInstall(){
         boolean installed = sytApi.isSytInstalled();
 
-        System.out.println(android.os.Build.MODEL);
-        System.out.println(checkPOS());
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         if (!installed && checkPOS()) {
             Toast.makeText(context, "请先安装收银通", LENGTH_LONG).show();
         }
