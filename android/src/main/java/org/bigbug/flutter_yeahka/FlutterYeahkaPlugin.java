@@ -72,7 +72,7 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        if (call.method != CHECK_INSTALL && !flutterYeahkaModule.checkInstall(true)) {
+        if (!call.method.equals(CHECK_INSTALL) && !flutterYeahkaModule.checkInstall(true)) {
             result.error(NOT_FOUND_ERROR_CODE, "收银通未安装", null);
             return;
         }
