@@ -13,6 +13,10 @@ class FlutterYeahka {
     await _channel.invokeMethod(SIGN);
   }
 
+  static Future<bool> checkInstall() async {
+   return await _channel.invokeMethod(CHECK_INSTALL);
+  }
+
   static Future<String> downloadTMK(String authorizationCode) async {
     await _channel.invokeMethod(DOWNLOAD_TMK, {"authorizationCode": authorizationCode});
   }

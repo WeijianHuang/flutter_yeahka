@@ -2,6 +2,7 @@ package org.bigbug.flutter_yeahka.constant;
 
 public class ActionType {
     public static final String SIGN = "sign"; // 签到
+    public static final String CHECK_INSTALL = "checkInstall"; // 检查下载
     public static final String DOWNLOAD_TMK = "downloadTMK"; // 下载TMK
     public static final String SWIPE_CARD_TRANS = "swipeCardTrans"; // 刷卡支付
     public static final String QRPAY_B_SCAN_C = "qrPayBScanC"; // 二维码支付B扫C

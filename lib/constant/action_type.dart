@@ -1,5 +1,6 @@
 final String SIGN = "sign"; // 签到
 final String DOWNLOAD_TMK = "downloadTMK"; // 下载TMK
+final String CHECK_INSTALL = "checkInstall";
 final String SWIPE_CARD_TRANS = "swipeCardTrans"; // 刷卡支付
 final String QRPAY_B_SCAN_C = "qrPayBScanC"; // 二维码支付B扫C
 final String QRPAY_C_SCAN_B_WX = "qrPayCScanBWx"; //微信二维码支付C扫B

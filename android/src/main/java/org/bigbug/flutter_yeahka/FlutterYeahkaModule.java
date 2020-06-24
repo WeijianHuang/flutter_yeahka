@@ -124,11 +124,11 @@ public class FlutterYeahkaModule {
     }
 
     // 检查是否安装收银通
-    boolean checkInstall(){
+    boolean checkInstall(boolean showTip){
         boolean installed = sytApi.isSytInstalled();
 
-        if (!installed) {
-            Toast.makeText(context, "请先安装收银通", LENGTH_LONG).show();
+        if (!installed && showTip == true) {
+            Toast.makeText(context, "未安装收银通", LENGTH_LONG).show();
         }
         return  installed;
     }

@@ -71,7 +71,7 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        if (!flutterYeahkaModule.checkInstall()) {
+        if (call.method != CHECK_INSTALL && !flutterYeahkaModule.checkInstall(true)) {
             result.error(NOT_FOUND_ERROR_CODE, "收银通未安装", null);
             return;
         }
@@ -88,6 +88,8 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
                     result.success(flutterYeahkaModule.downloadTMK(authorizationCode));
                 }
                 break;
+            case CHECK_INSTALL:
+                result.success(flutterYeahkaModule.checkInstall());
             case SWIPE_CARD_TRANS: {
                 Integer amount = getAmount(call, result);
                 if (amount != null) {
