@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
+import static org.bigbug.flutter_yeahka.constant.ActionType.CHECK_INSTALL;
 import static org.bigbug.flutter_yeahka.constant.ActionType.DOWNLOAD_TMK;
 import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_B_SCAN_C;
 import static org.bigbug.flutter_yeahka.constant.ActionType.QRPAY_C_SCAN_B_WX;
@@ -89,7 +90,8 @@ public class FlutterYeahkaPlugin implements FlutterPlugin, MethodCallHandler, St
                 }
                 break;
             case CHECK_INSTALL:
-                result.success(flutterYeahkaModule.checkInstall());
+                result.success(flutterYeahkaModule.checkInstall(false));
+                break;
             case SWIPE_CARD_TRANS: {
                 Integer amount = getAmount(call, result);
                 if (amount != null) {
